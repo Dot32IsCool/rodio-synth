@@ -3,7 +3,7 @@ use rodio::source::Source;
 
 const SAMPLE_RATE: u32 = 48000; // The sample rate of the audio in Hz.
 
-// The wave type of the synth
+// The wave type of the Synth
 #[derive(Clone, Debug)]
 enum WaveType {
 	Sine,
@@ -36,6 +36,24 @@ impl Synth {
 			freq: freq,
 			num_sample: 0,
 			wave_type: WaveType::Square,
+		}
+	}
+
+	#[allow(dead_code)]
+	pub fn sawtooth_wave(freq: f32) -> Synth {
+		Synth {
+			freq: freq,
+			num_sample: 0,
+			wave_type: WaveType::Sawtooth,
+		}
+	}
+
+	#[allow(dead_code)]
+	pub fn triangle_wave(freq: f32) -> Synth {
+		Synth {
+			freq: freq,
+			num_sample: 0,
+			wave_type: WaveType::Triangle,
 		}
 	}
 }
