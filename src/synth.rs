@@ -64,12 +64,13 @@ impl Iterator for Synth {
     fn next(&mut self) -> Option<f32> {
         self.num_sample = self.num_sample.wrapping_add(1);
 
-        let value = 2.0 * PI * self.freq * self.num_sample as f32 / SAMPLE_RATE as f32;
+		let t = self.num_sample as f32 / SAMPLE_RATE as f32; // Time
+        let value = 2.0 * PI * self.freq * t;
 
 		match self.wave_type {
-			WaveType::Sine => Some(value.sin()), // Sine wave
+			WaveType::Sine => Some(value.sin()), // Sine wave 
 			WaveType::Square => Some(value.sin().signum()), // Signing the sine wave locks it to 1 or -1, making it a square wave.
-			WaveType::Sawtooth => Some(value.sin().atan()), // The arctangent of the sine wave makes it a sawtooth wave.
+			WaveType::Sawtooth => Some(2.0*(t % (1.0/self.freq))*self.freq - 1.0),
 			WaveType::Triangle => Some(value.sin().asin()), // The arcsine of the sine wave makes it a triangle wave.
 			_ => None,
 		}
