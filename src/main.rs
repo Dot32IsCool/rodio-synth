@@ -19,10 +19,11 @@ fn main() {
 
     let _conn_in = midi_in.connect(in_port, "midir-read-input", move |stamp, message, _| {
         let hz = 440.0 * 2.0_f32.powf((message[1] as f32 - 69.0) / 12.0);
+        let pressure = message[2] as f32 / 127.0;
 
         if message[0] == 144 {
             sink.stop();
-            sink.append(synth::Synth::sawtooth_wave(hz).amplify(0.10));
+            sink.append(synth::Synth::sawtooth_wave(hz).amplify(pressure));
         }
         if message[0] == 128 {
             sink.stop();
