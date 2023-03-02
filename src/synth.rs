@@ -16,10 +16,12 @@ enum WaveType {
 #[derive(Clone, Debug)]
 pub struct Synth {
     freq: f32,
-    num_sample: usize,
+    num_sample: usize, // The number of samples that have been played
 	wave_type: WaveType,
 }
 
+// Allow dead code is used because main.rs doesn't use all of the wave types, just one of them
+// Without this, the compiler would complain about unused code.
 impl Synth {
 	#[allow(dead_code)]
     pub fn sine_wave(freq: f32) -> Synth {
@@ -70,9 +72,8 @@ impl Iterator for Synth {
 		match self.wave_type {
 			WaveType::Sine => Some(value.sin()), // Sine wave 
 			WaveType::Square => Some(value.sin().signum()), // Signing the sine wave locks it to 1 or -1, making it a square wave.
-			WaveType::Sawtooth => Some(2.0*(t % (1.0/self.freq))*self.freq - 1.0),
+			WaveType::Sawtooth => Some(2.0*(t % (1.0/self.freq))*self.freq - 1.0), // Sawtooth wave using modulo.
 			WaveType::Triangle => Some(value.sin().asin()), // The arcsine of the sine wave makes it a triangle wave.
-			_ => None,
 		}
     }
 }
@@ -91,6 +92,6 @@ impl Source for Synth {
     }
 
     fn total_duration(&self) -> Option<std::time::Duration> {
-        None
+        None // Will continue indefinitely until stopped
     }
 }
