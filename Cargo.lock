@@ -144,6 +144,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "core-foundation"
+version = "0.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "194a7a9e6de53fa55116934067c844d9d749312f75c6f6d0980e8c252f8c2146"
+dependencies = [
+ "core-foundation-sys 0.8.3",
+ "libc",
+]
+
+[[package]]
 name = "core-foundation-sys"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -176,6 +186,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "coremidi"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a7847ca018a67204508b77cb9e6de670125075f7464fff5f673023378fa34f5"
+dependencies = [
+ "core-foundation",
+ "core-foundation-sys 0.8.3",
+ "coremidi-sys",
+]
+
+[[package]]
+name = "coremidi-sys"
+version = "3.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "79a6deed0c97b2d40abbab77e4c97f81d71e162600423382c277dd640019116c"
+dependencies = [
+ "core-foundation-sys 0.8.3",
+]
+
+[[package]]
 name = "cpal"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -198,7 +228,7 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "windows",
+ "windows 0.44.0",
 ]
 
 [[package]]
@@ -374,6 +404,22 @@ name = "memchr"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
+
+[[package]]
+name = "midir"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a456444d83e7ead06ae6a5c0a215ed70282947ff3897fb45fcb052b757284731"
+dependencies = [
+ "alsa",
+ "bitflags",
+ "coremidi",
+ "js-sys",
+ "libc",
+ "wasm-bindgen",
+ "web-sys",
+ "windows 0.43.0",
+]
 
 [[package]]
 name = "minimal-lexical"
@@ -726,6 +772,7 @@ dependencies = [
 name = "synth"
 version = "0.1.0"
 dependencies = [
+ "midir",
  "rodio",
 ]
 
@@ -904,6 +951,21 @@ name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
+
+[[package]]
+name = "windows"
+version = "0.43.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "04662ed0e3e5630dfa9b26e4cb823b817f1a9addda855d973a9458c236556244"
+dependencies = [
+ "windows_aarch64_gnullvm",
+ "windows_aarch64_msvc",
+ "windows_i686_gnu",
+ "windows_i686_msvc",
+ "windows_x86_64_gnu",
+ "windows_x86_64_gnullvm",
+ "windows_x86_64_msvc",
+]
 
 [[package]]
 name = "windows"

@@ -1,16 +1,33 @@
 use rodio::OutputStream;
 use rodio::source::Source;
+use rodio::{Decoder, Sink};
+use midir::{MidiInput, Ignore};
 // Import synth module
 mod synth;
 
 fn main() {
-    // Get a output stream handle to the default physical sound device
+    // Get an output stream handle to the default physical sound device
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
+    let sink = Sink::try_new(&stream_handle).unwrap();
 
-    // Play a sine wave at 440Hz
-    // stream_handle.play_raw(synth::Synth::sine_wave(440.0).amplify(0.10)).unwrap();
-    stream_handle.play_raw(synth::Synth::sawtooth_wave(220.0).amplify(0.10)).unwrap();
+    // Create a new midi input
+    let mut midi_in = MidiInput::new("midir reading input").unwrap();
+    midi_in.ignore(Ignore::None);
 
-    // Sleep for 1 second
-    std::thread::sleep(std::time::Duration::from_secs(1));
+    // Get an input port (Automatically choosing the first one)
+    let in_port = &midi_in.ports()[0];
+
+    let _conn_in = midi_in.connect(in_port, "midir-read-input", move |stamp, message, _| {
+        let hz = 440.0 * 2.0_f32.powf((message[1] as f32 - 69.0) / 12.0);
+
+        if message[0] == 144 {
+            sink.stop();
+            sink.append(synth::Synth::sawtooth_wave(hz).amplify(0.10));
+        }
+        if message[0] == 128 {
+            sink.stop();
+        }
+    }, ()).unwrap();
+
+    loop {}
 }
