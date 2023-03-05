@@ -2,13 +2,17 @@ use rodio::OutputStream;
 use rodio::source::Source;
 use rodio::Sink;
 use midir::MidiInput;
+use std::collections::HashMap;
 // Import synth module
 mod synth;
 
 fn main() {
     // Get an output stream handle to the default physical sound device
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
-    let sink = Sink::try_new(&stream_handle).unwrap();
+    // let sink = Sink::try_new(&stream_handle).unwrap();
+
+    // Store a hashmap of sinks
+    let mut sinks: HashMap<u8, Sink> = HashMap::new();
 
     // Create a new midi input
     let midi_in = MidiInput::new("midir reading input").unwrap();
@@ -23,15 +27,25 @@ fn main() {
         let hz = 440.0 * 2.0_f32.powf((message[1] as f32 - 69.0) / 12.0);
         let pressure = message[2] as f32 / 127.0;
 
+        // Detect whether the key is black or white
+        let key = message[1] % 12;
+        let is_black = key == 1 || key == 3 || key == 6 || key == 8 || key == 10;
+
         if message[0] == 144 { // 144 is the event for note on
-            sink.stop();
-            sink.append(synth::Synth::square_wave(hz).amplify(pressure));
-            println!("hz: {}", hz);
+            // sink.stop();
+            // sink.append(synth::Synth::square_wave(hz).amplify(pressure));
+            // println!("hz: {}", hz);
             // stream_handle.play_raw(synth::Synth::square_wave(hz).amplify(0.1)).unwrap();
+
+            // Create a new sink for the key
+            let mut sink = Sink::try_new(&stream_handle).unwrap();
+            sink.append(synth::Synth::square_wave(hz).amplify(pressure));
+            sinks.insert(message[1], sink);
         }
         if message[0] == 128 { // 128 is the event for note off
-            sink.stop();
-            println!("Stop");
+            // sink.stop();
+            // println!("Stop");
+            sinks.remove(&message[1]);
         }
     }, ()).unwrap();
 
