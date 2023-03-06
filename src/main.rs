@@ -27,13 +27,9 @@ fn main() {
         let hz = 440.0 * 2.0_f32.powf((message[1] as f32 - 69.0) / 12.0);
         let pressure = message[2] as f32 / 127.0;
 
-        // Detect whether the key is black or white
-        let key = message[1] % 12;
-        let is_black = key == 1 || key == 3 || key == 6 || key == 8 || key == 10;
-
         if message[0] == 144 { // 144 is the event for note on
             // Create a new sink for the key
-            let mut sink = Sink::try_new(&stream_handle).unwrap();
+            let sink = Sink::try_new(&stream_handle).unwrap();
             sink.append(oscillator::Oscilator::square_wave(hz).amplify(pressure));
             sinks.insert(message[1], sink);
         }
