@@ -5,6 +5,10 @@ use midir::MidiInput;
 use std::collections::HashMap;
 // Import synth module
 mod oscillator;
+mod synth;
+
+use oscillator::Oscillator;
+use synth::Synth;
 
 fn main() {
     // Get an output stream handle to the default physical sound device
@@ -30,7 +34,7 @@ fn main() {
         if message[0] == 144 { // 144 is the event for note on
             // Create a new sink for the key
             let sink = Sink::try_new(&stream_handle).unwrap();
-            sink.append(oscillator::Oscilator::square_wave(hz).amplify(pressure));
+            sink.append(Oscillator::square_wave(hz).amplify(pressure));
             sinks.insert(message[1], sink);
         }
         if message[0] == 128 { // 128 is the event for note off

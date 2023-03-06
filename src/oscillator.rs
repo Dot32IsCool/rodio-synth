@@ -1,4 +1,4 @@
-// This file is for the Oscilator struct, which implements the rodio source trait.
+// This file is for the Oscillator struct, which implements the rodio source trait.
 
 use std::f32::consts::PI;
 use rodio::source::Source;
@@ -15,7 +15,7 @@ enum WaveType {
 }
 
 #[derive(Clone, Debug)]
-pub struct Oscilator {
+pub struct Oscillator {
     freq: f32,
     num_sample: usize, // The number of samples that have been played
 	wave_type: WaveType,
@@ -23,10 +23,10 @@ pub struct Oscilator {
 
 // Allow dead code is used because main.rs doesn't use all of the wave types, just one of them
 // Without this, the compiler would complain about unused code.
-impl Oscilator {
+impl Oscillator {
 	#[allow(dead_code)]
-    pub fn sine_wave(freq: f32) -> Oscilator { // Create a new sine wave oscillator
-        Oscilator {
+    pub fn sine_wave(freq: f32) -> Oscillator { // Create a new sine wave oscillator
+        Oscillator {
             freq,
             num_sample: 0,
 			wave_type: WaveType::Sine,
@@ -34,8 +34,8 @@ impl Oscilator {
     }
 
 	#[allow(dead_code)]
-	pub fn square_wave(freq: f32) -> Oscilator { // Create a new square wave oscillator
-		Oscilator {
+	pub fn square_wave(freq: f32) -> Oscillator { // Create a new square wave oscillator
+		Oscillator {
 			freq,
 			num_sample: 0,
 			wave_type: WaveType::Square,
@@ -43,8 +43,8 @@ impl Oscilator {
 	}
 
 	#[allow(dead_code)]
-	pub fn sawtooth_wave(freq: f32) -> Oscilator { // Create a new sawtooth wave oscillator
-		Oscilator {
+	pub fn sawtooth_wave(freq: f32) -> Oscillator { // Create a new sawtooth wave oscillator
+		Oscillator {
 			freq,
 			num_sample: 0,
 			wave_type: WaveType::Sawtooth,
@@ -52,8 +52,8 @@ impl Oscilator {
 	}
 
 	#[allow(dead_code)]
-	pub fn triangle_wave(freq: f32) -> Oscilator { // Create a new triangle wave oscillator
-		Oscilator {
+	pub fn triangle_wave(freq: f32) -> Oscillator { // Create a new triangle wave oscillator
+		Oscillator {
 			freq,
 			num_sample: 0,
 			wave_type: WaveType::Triangle,
@@ -63,7 +63,7 @@ impl Oscilator {
 
 // Rodio requires that Iterator is implemented
 // The next function is called every time a new sample is needed
-impl Iterator for Oscilator {
+impl Iterator for Oscillator {
     type Item = f32;
 
     fn next(&mut self) -> Option<f32> {
@@ -81,7 +81,7 @@ impl Iterator for Oscilator {
     }
 }
 
-impl Source for Oscilator {
+impl Source for Oscillator {
     fn current_frame_len(&self) -> Option<usize> {
         None
     }
