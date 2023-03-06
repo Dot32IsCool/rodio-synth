@@ -3,7 +3,7 @@ use rodio::source::Source;
 
 const SAMPLE_RATE: u32 = 48000; // The sample rate of the audio in Hz.
 
-// The wave type of the Synth
+// The wave type of the oscillator
 #[derive(Clone, Debug)]
 enum WaveType {
 	Sine,
@@ -14,7 +14,7 @@ enum WaveType {
 
 
 #[derive(Clone, Debug)]
-pub struct Synth {
+pub struct Oscilator {
     freq: f32,
     num_sample: usize, // The number of samples that have been played
 	wave_type: WaveType,
@@ -22,10 +22,10 @@ pub struct Synth {
 
 // Allow dead code is used because main.rs doesn't use all of the wave types, just one of them
 // Without this, the compiler would complain about unused code.
-impl Synth {
+impl Oscilator {
 	#[allow(dead_code)]
-    pub fn sine_wave(freq: f32) -> Synth {
-        Synth {
+    pub fn sine_wave(freq: f32) -> Oscilator {
+        Oscilator {
             freq: freq,
             num_sample: 0,
 			wave_type: WaveType::Sine,
@@ -33,8 +33,8 @@ impl Synth {
     }
 
 	#[allow(dead_code)]
-	pub fn square_wave(freq: f32) -> Synth {
-		Synth {
+	pub fn square_wave(freq: f32) -> Oscilator {
+		Oscilator {
 			freq: freq,
 			num_sample: 0,
 			wave_type: WaveType::Square,
@@ -42,8 +42,8 @@ impl Synth {
 	}
 
 	#[allow(dead_code)]
-	pub fn sawtooth_wave(freq: f32) -> Synth {
-		Synth {
+	pub fn sawtooth_wave(freq: f32) -> Oscilator {
+		Oscilator {
 			freq: freq,
 			num_sample: 0,
 			wave_type: WaveType::Sawtooth,
@@ -51,8 +51,8 @@ impl Synth {
 	}
 
 	#[allow(dead_code)]
-	pub fn triangle_wave(freq: f32) -> Synth {
-		Synth {
+	pub fn triangle_wave(freq: f32) -> Oscilator {
+		Oscilator {
 			freq: freq,
 			num_sample: 0,
 			wave_type: WaveType::Triangle,
@@ -60,7 +60,7 @@ impl Synth {
 	}
 }
 
-impl Iterator for Synth {
+impl Iterator for Oscilator {
     type Item = f32;
 
     fn next(&mut self) -> Option<f32> {
@@ -78,7 +78,7 @@ impl Iterator for Synth {
     }
 }
 
-impl Source for Synth {
+impl Source for Oscilator {
     fn current_frame_len(&self) -> Option<usize> {
         None
     }
