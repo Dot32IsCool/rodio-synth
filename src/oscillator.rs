@@ -1,3 +1,5 @@
+// This file is for the Oscilator struct, which implements the rodio source trait.
+
 use std::f32::consts::PI;
 use rodio::source::Source;
 
@@ -12,7 +14,6 @@ enum WaveType {
 	Triangle,
 }
 
-
 #[derive(Clone, Debug)]
 pub struct Oscilator {
     freq: f32,
@@ -24,42 +25,44 @@ pub struct Oscilator {
 // Without this, the compiler would complain about unused code.
 impl Oscilator {
 	#[allow(dead_code)]
-    pub fn sine_wave(freq: f32) -> Oscilator {
+    pub fn sine_wave(freq: f32) -> Oscilator { // Create a new sine wave oscillator
         Oscilator {
-            freq: freq,
+            freq,
             num_sample: 0,
 			wave_type: WaveType::Sine,
         }
     }
 
 	#[allow(dead_code)]
-	pub fn square_wave(freq: f32) -> Oscilator {
+	pub fn square_wave(freq: f32) -> Oscilator { // Create a new square wave oscillator
 		Oscilator {
-			freq: freq,
+			freq,
 			num_sample: 0,
 			wave_type: WaveType::Square,
 		}
 	}
 
 	#[allow(dead_code)]
-	pub fn sawtooth_wave(freq: f32) -> Oscilator {
+	pub fn sawtooth_wave(freq: f32) -> Oscilator { // Create a new sawtooth wave oscillator
 		Oscilator {
-			freq: freq,
+			freq,
 			num_sample: 0,
 			wave_type: WaveType::Sawtooth,
 		}
 	}
 
 	#[allow(dead_code)]
-	pub fn triangle_wave(freq: f32) -> Oscilator {
+	pub fn triangle_wave(freq: f32) -> Oscilator { // Create a new triangle wave oscillator
 		Oscilator {
-			freq: freq,
+			freq,
 			num_sample: 0,
 			wave_type: WaveType::Triangle,
 		}
 	}
 }
 
+// Rodio requires that Iterator is implemented
+// The next function is called every time a new sample is needed
 impl Iterator for Oscilator {
     type Item = f32;
 
@@ -84,7 +87,7 @@ impl Source for Oscilator {
     }
 
     fn channels(&self) -> u16 {
-        1
+        1 // Mono, not stereo
     }
 
     fn sample_rate(&self) -> u32 {
