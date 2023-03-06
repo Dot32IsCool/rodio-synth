@@ -32,32 +32,28 @@ impl Envelope {
 }
 
 pub struct Synth {
-	audio_sinks: HashMap<usize, Sink>,
-	envelope_states: HashMap<usize, EnvelopeState>,
-	next_source_id: usize,
+	audio_sinks: HashMap<u8, Sink>,
+	envelope_states: HashMap<u8, EnvelopeState>,
 	stream_handle: rodio::OutputStreamHandle,
 }
 
 impl Synth {
-	pub fn new() -> Synth {
-		let (stream, stream_handle) = rodio::OutputStream::try_default().unwrap();
+	pub fn new(stream_handle: rodio::OutputStreamHandle) -> Synth {
+		// let (_stream, stream_handle) = rodio::OutputStream::try_default().unwrap();
+		// For some reason the above code would fail if it was in the new function
 
 		Synth {
 			audio_sinks: HashMap::new(),
 			envelope_states: HashMap::new(),
-			next_source_id: 0,
 			stream_handle,
 		}
 	}
 
-	pub fn play_source(&mut self, audio_source: Box<dyn Source<Item = f32> + Send>) -> usize {
-		let source_id = self.next_source_id;
-        self.next_source_id += 1;
-
-		let sink = Sink::try_new(&self.stream_handle).unwrap();
+	pub fn play_source(&mut self, audio_source: Box<dyn Source<Item = f32> + Send>, source_id: u8) {
+		let sink = Sink::try_new(&self.stream_handle).expect("Failed to create sink");
 		sink.append(audio_source);
 
-		let envelope = Envelope::new(0.1, 0.2, 0.7, 0.3); // example envelope
+		let envelope = Envelope::new(0.1, 0.2, 0.7, 1.3); // example envelope
 		let envelope_state = EnvelopeState {
 			envelope,
 			start_time: Instant::now(),
@@ -67,11 +63,9 @@ impl Synth {
 
 		self.audio_sinks.insert(source_id, sink);
 		self.envelope_states.insert(source_id, envelope_state);
-
-		source_id
 	}
 
-	pub fn release_source(&mut self, source_id: usize) {
+	pub fn release_source(&mut self, source_id: u8) {
 		if let Some(envelope_state) = self.envelope_states.get_mut(&source_id) {
 			envelope_state.is_releasing = true;
 			envelope_state.release_start_time = Some(Instant::now());
