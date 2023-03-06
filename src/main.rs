@@ -1,8 +1,6 @@
 use rodio::OutputStream;
 use rodio::source::Source;
-use rodio::Sink;
 use midir::MidiInput;
-use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 // Import synth module
 mod oscillator;
@@ -15,7 +13,7 @@ fn main() {
     // Create a new synth
     let (_stream, stream_handle) = OutputStream::try_default().unwrap(); // Oddly, this cant be done in the new function, otherwise the program will panic
     // The synth will manage multiple audio sinks and their envelopes
-    let mut synth = Arc::new(Mutex::new(Synth::new(stream_handle)));
+    let synth = Arc::new(Mutex::new(Synth::new(stream_handle)));
 
     // Create a new midi input
     let midi_in = MidiInput::new("midir reading input").unwrap();
@@ -24,7 +22,9 @@ fn main() {
     // (It will panic if no midi device is connected)
     let in_port = &midi_in.ports()[0];
 
-    let synth_clone = synth.clone(); // clone for use in closure
+    // Cloned for use in closure, because the closure takes ownership
+    // However this is not a deep clone, so the audio sinks and their envelopes stay the same!
+    let synth_clone = synth.clone();
 
     // _conn_in needs to be a named parameter, because it needs to be kept alive until the end of the scope
     let _conn_in = midi_in.connect(in_port, "midir-read-input", move |_stamp, message, _| {
@@ -35,17 +35,14 @@ fn main() {
         let mut synth = synth_clone.lock().unwrap();
 
         if message[0] == 144 { // 144 is the event for note on
-            // // Create a new sink for the key
-            // let sink = Sink::try_new(&stream_handle).unwrap();
-            // sink.append(Oscillator::square_wave(hz).amplify(pressure));
-            // sinks.insert(message[1], sink);
-
-            // Create a new audio source
+            // Create a new audio source from the oscillator
             let audio_source = Oscillator::square_wave(hz).amplify(pressure);
             // Play the audio source
             synth.play_source(Box::new(audio_source), message[1]);
         }
         if message[0] == 128 { // 128 is the event for note off
+            // Signals the envelope to start releasing
+            // The sink is automatically deleted when the envelope is done releasing
             synth.release_source(message[1]);
         }
     }, ()).unwrap();
